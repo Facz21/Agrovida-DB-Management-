@@ -1,0 +1,16 @@
+sensor_id,sensor_type,sensor_status,maintenance_date
+SENS001,Rainfall,Inactive,2024-06-01
+SENS002,Temperature,Active,2024-06-04
+SENS003,Humidity,Active,2024-06-07
+SENS004,Temperature,Active,2024-06-10
+SENS005,Temperature,Faulty,2024-06-13
+SENS006,pH,Inactive,2024-06-16
+SENS007,pH,Faulty,2024-06-19
+SENS008,Humidity,Active,2024-06-22
+SENS009,Humidity,Inactive,2024-06-25
+SENS010,Temperature,Active,2024-06-28
+SENS011,Humidity,Inactive,2024-07-01
+SENS012,Rainfall,Inactive,2024-07-04
+SENS013,pH,Faulty,2024-07-07
+SENS014,Temperature,Faulty,2024-07-10
+SENS015,Rainfall,Inactive,2024-07-13

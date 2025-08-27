@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroVida - Varieties Management Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+            color: #28a745 !important;
+        }
+        .card-header {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+        .btn-primary {
+            background: #28a745;
+            border-color: #28a745;
+        }
+        .btn-primary:hover {
+            background: #218838;
+            border-color: #1e7e34;
+        }
+        .table-hover tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        .loading {
+            display: none;
+        }
+        .alert {
+            margin-top: 1rem;
+        }
+        .modal-header {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-seedling me-2"></i>AgroVida
+            </a>
+            <span class="navbar-text">
+                Varieties Management System
+            </span>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0">
+                            <i class="fas fa-leaf me-2"></i>Crop Varieties Management
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-0">Manage crop varieties and their relationships with crop types in the AgroVida system.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#varietyModal" onclick="openCreateModal()">
+                    <i class="fas fa-plus me-2"></i>Add New Variety
+                </button>
+                <button class="btn btn-outline-success ms-2" onclick="loadData()">
+                    <i class="fas fa-sync-alt me-2"></i>Refresh Data
+                </button>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" id="searchInput" placeholder="Search varieties..." onkeyup="filterTable()">
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div class="text-center loading" id="loadingIndicator">
+            <div class="spinner-border text-success" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Loading data...</p>
+        </div>
+
+        <!-- Alert Container -->
+        <div id="alertContainer"></div>
+
+        <!-- Data Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-table me-2"></i>Varieties List
+                            <span class="badge bg-light text-dark ms-2" id="recordCount">0 records</span>
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-success">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Variety Name</th>
+                                        <th>Crop Type</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="varietiesTableBody">
+                                    <!-- Data will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Variety Modal -->
+    <div class="modal fade" id="varietyModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">
+                        <i class="fas fa-leaf me-2"></i>Add New Variety
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="varietyForm">
+                        <input type="hidden" id="varietyId">
+                        
+                        <div class="mb-3">
+                            <label for="varietyName" class="form-label">Variety Name *</label>
+                            <input type="text" class="form-control" id="varietyName" required>
+                            <div class="form-text">Enter the name of the crop variety (minimum 2 characters)</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="cropTypeId" class="form-label">Crop Type *</label>
+                            <select class="form-select" id="cropTypeId" required>
+                                <option value="">Select a crop type...</option>
+                            </select>
+                            <div class="form-text">Select the crop type this variety belongs to</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveVariety()">
+                        <i class="fas fa-save me-2"></i>Save Variety
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-trash me-2"></i>Confirm Delete
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete the variety "<span id="deleteVarietyName"></span>"?</p>
+                    <p class="text-muted small">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDelete()">
+                        <i class="fas fa-trash me-2"></i>Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
